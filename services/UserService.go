@@ -32,3 +32,8 @@ func (s *UserService) CreateUser(name, email string, role int) (*models.User, er
 
 	return user, nil
 }
+
+// GetAllUsers retrieves all the users from the database.
+func (s *UserService) GetAllUsers() ([]*models.User, error) {
+	return s.repository.GetAll()
+}

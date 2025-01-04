@@ -12,6 +12,7 @@ import (
 // UserRepository interface defines the methods to save, update, retrieve and list users.
 type UserRepository interface {
 	Save(user *models.User) error
+	DeleteAll() error
 	FindById(id string) (*models.User, error)
 	GetAll() ([]*models.User, error)
 	UpdateRole(id string, role models.UserRole) error
@@ -80,5 +81,13 @@ func (r *UserRepositoryImpl) UpdateRole(id string, role models.UserRole) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	_, err := r.collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$set": bson.M{"role": role}})
+	return err
+}
+
+// DeleteAll method deletes all the users from the database. It applies a timeout of 2 seconds. It is used for testing purposes.
+func (r *UserRepositoryImpl) DeleteAll() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	_, err := r.collection.DeleteMany(ctx, bson.M{})
 	return err
 }

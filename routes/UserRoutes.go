@@ -9,5 +9,6 @@ import (
 func addUserRoutes(userService *services.UserService, router *gin.Engine) *gin.Engine {
 	r := router.Group("/users")
 	r.POST("", controllers.AddUser(userService))
+	r.GET("", controllers.GetAllUsers(userService))
 	return router
 }

@@ -27,3 +27,14 @@ func AddUser(userService *services.UserService) gin.HandlerFunc {
 		c.JSON(201, user)
 	}
 }
+
+func GetAllUsers(service *services.UserService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		users, err := service.GetAllUsers()
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, users)
+	}
+}
