@@ -7,8 +7,9 @@ import (
 )
 
 type RepositoryContext struct {
-	UserRepository repositories.UserRepository
-	Counters       *mongo.Collection
+	UserRepository  repositories.UserRepository
+	BatchRepository repositories.BatchRepository
+	Counters        *mongo.Collection
 }
 
 func NewRepositoryContext(env *configs.Env) *RepositoryContext {
@@ -16,9 +17,11 @@ func NewRepositoryContext(env *configs.Env) *RepositoryContext {
 	db := dbClient.Database(env.DBName)
 
 	userRepository := repositories.NewUserRepository(db.Collection("users"))
+	batchRepository := repositories.NewBatchRepository(db.Collection("batches"))
 
 	return &RepositoryContext{
-		UserRepository: userRepository,
-		Counters:       db.Collection("counters"),
+		UserRepository:  userRepository,
+		BatchRepository: batchRepository,
+		Counters:        db.Collection("counters"),
 	}
 }

@@ -1,40 +1,21 @@
 package routes
 
 import (
-	"ashishkujoy/agrasandhan/configs"
-	"ashishkujoy/agrasandhan/di"
 	"ashishkujoy/agrasandhan/repositories/models"
-	"context"
+	"cmp"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
-	"time"
 )
 
-var config = &configs.Env{
-	MongoURI: "mongodb://localhost:27017",
-	DBName:   fmt.Sprintf("test-%d", time.Now().UnixMilli()),
-}
-var repositoryContext = di.NewRepositoryContext(config)
-var serviceContext = di.NewServiceContext(repositoryContext)
-var router = addUserRoutes(serviceContext.UserService, gin.New())
-
-func TestMain(m *testing.M) {
-	exitCode := m.Run()
-	dbClient := configs.ConnectDB(*config)
-	_ = dbClient.Database(config.DBName).Drop(context.Background())
-
-	os.Exit(exitCode)
-}
+var router = addUserRoutes(ServiceContext.UserService, gin.New())
 
 func TestAddUserRoutes(t *testing.T) {
-	_ = repositoryContext.UserRepository.DeleteAll()
+	_ = RepositoryContext.UserRepository.DeleteAll()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(
 		"POST",
@@ -54,7 +35,7 @@ func TestAddUserRoutes(t *testing.T) {
 }
 
 func TestGetAllUsersRoutes(t *testing.T) {
-	repository := repositoryContext.UserRepository
+	repository := RepositoryContext.UserRepository
 	_ = repository.DeleteAll()
 
 	_ = repository.Save(&models.User{Name: "Martha", Email: "", Role: models.UserRole(1)})
@@ -67,12 +48,12 @@ func TestGetAllUsersRoutes(t *testing.T) {
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 
-	var actualBody []models.User
+	var actualBody []*models.User
 	err := json.Unmarshal(w.Body.Bytes(), &actualBody)
 	assert.NoError(t, err)
 
 	// sort the users by name
-	actualBody = sortUsers(actualBody)
+	actualBody = Sort(actualBody, func(user *models.User) string { return user.Name })
 
 	assert.Len(t, actualBody, 3)
 	assert.Equal(t, "James", actualBody[0].Name)
@@ -80,13 +61,14 @@ func TestGetAllUsersRoutes(t *testing.T) {
 	assert.Equal(t, "Martha", actualBody[2].Name)
 }
 
-func sortUsers(users []models.User) []models.User {
-	for i := 0; i < len(users); i++ {
-		for j := i + 1; j < len(users); j++ {
-			if users[i].Name > users[j].Name {
-				users[i], users[j] = users[j], users[i]
+// Sort sorts the items using the given function.
+func Sort[T any, U cmp.Ordered](items []*T, f func(*T) U) []*T {
+	for i := 0; i < len(items); i++ {
+		for j := i + 1; j < len(items); j++ {
+			if f(items[i]) > f(items[j]) {
+				items[i], items[j] = items[j], items[i]
 			}
 		}
 	}
-	return users
+	return items
 }
