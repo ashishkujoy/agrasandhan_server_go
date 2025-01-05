@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"ashishkujoy/agrasandhan/requests"
 	"ashishkujoy/agrasandhan/services"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -42,6 +43,7 @@ func GetAllBatches(service *services.BatchService) gin.HandlerFunc {
 	}
 }
 
+// GetBatchById retrieves a batch by its id.
 func GetBatchById(service *services.BatchService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
@@ -55,5 +57,28 @@ func GetBatchById(service *services.BatchService) gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, batch)
+	}
+}
+
+// AssignMentor assigns a mentor to a batch.
+func AssignMentor(service *services.BatchService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		var mentorReq requests.AssignMentorRequest
+		err = c.ShouldBindJSON(&mentorReq)
+		if err != nil {
+			c.JSON(400, gin.H{"error": err.Error()})
+			return
+		}
+		mentor, err := service.AssignMentor(id, mentorReq)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, mentor)
 	}
 }

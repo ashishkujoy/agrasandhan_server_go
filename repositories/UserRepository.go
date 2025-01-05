@@ -41,7 +41,7 @@ func (r *UserRepositoryImpl) FindById(id string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var user models.User
-	err := r.collection.FindOne(ctx, models.User{ID: id}).Decode(&user)
+	err := r.collection.FindOne(ctx, bson.M{"id": id}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}

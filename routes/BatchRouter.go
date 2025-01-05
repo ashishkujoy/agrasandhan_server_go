@@ -11,5 +11,8 @@ func addBatchRoutes(batchService *services.BatchService, router *gin.Engine) *gi
 	r.POST("", controllers.CreateBatch(batchService))
 	r.GET("", controllers.GetAllBatches(batchService))
 	r.GET("/:id", controllers.GetBatchById(batchService))
+
+	r.POST("/:id/mentors", controllers.AssignMentor(batchService))
+
 	return router
 }

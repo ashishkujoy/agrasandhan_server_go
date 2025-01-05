@@ -81,4 +81,42 @@ func TestBatchRoutes(t *testing.T) {
 
 		assert.Equal(t, batch12.Name, batch.Name)
 	})
+
+	t.Run("Assign Mentor to Batch", func(t *testing.T) {
+		repository := RepositoryContext.BatchRepository
+		_ = repository.DeleteAll()
+		_ = RepositoryContext.UserRepository.Save(&models.User{ID: "11", Name: "Mentor 1", Email: "", Role: 1})
+
+		batch := &models.Batch{ID: 10, Name: "Batch 1", StartDate: time.Now()}
+		_ = repository.Save(batch)
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest(
+			"POST",
+			"/batches/10/mentors",
+			strings.NewReader(`{
+				"id": "11", 
+				"permissions": {
+					"allowProvideObservations": true, 
+					"allowReleaseIntern": false,
+					"allowProvideFeedback": false,
+					"allowDeliverFeedback": true
+				}
+			}`))
+
+		r.ServeHTTP(w, req)
+		assert.Equal(t, 200, w.Code)
+		var mentor models.Mentor
+		err := json.Unmarshal(w.Body.Bytes(), &mentor)
+		assert.NoError(t, err)
+		assert.Equal(t, models.Mentor{
+			ID: "11",
+			Permissions: models.MentorPermission{
+				AllowProvideObservations: true,
+				AllowReleaseIntern:       false,
+				AllowProvideFeedback:     false,
+				AllowDeliverFeedback:     true,
+			},
+		}, mentor)
+	})
 }

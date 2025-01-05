@@ -8,14 +8,18 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(repositoryCtx *RepositoryContext) *ServiceContext {
+	userService := services.NewUserService(
+		repositoryCtx.UserRepository,
+		services.NewIdGeneratorImpl("user", repositoryCtx.Counters),
+	)
+	batchService := services.NewBatchService(
+		repositoryCtx.BatchRepository,
+		services.NewIdGeneratorImpl("batches", repositoryCtx.Counters),
+		userService,
+	)
+
 	return &ServiceContext{
-		BatchService: services.NewBatchService(
-			repositoryCtx.BatchRepository,
-			services.NewIdGeneratorImpl("batches", repositoryCtx.Counters),
-		),
-		UserService: services.NewUserService(
-			repositoryCtx.UserRepository,
-			services.NewIdGeneratorImpl("user", repositoryCtx.Counters),
-		),
+		BatchService: batchService,
+		UserService:  userService,
 	}
 }

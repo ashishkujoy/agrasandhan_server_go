@@ -37,3 +37,7 @@ func (s *UserService) CreateUser(name, email string, role int) (*models.User, er
 func (s *UserService) GetAllUsers() ([]*models.User, error) {
 	return s.repository.GetAll()
 }
+
+func (s *UserService) GetUserById(id string) (*models.User, error) {
+	return s.repository.FindById(id)
+}

@@ -3,14 +3,14 @@ package models
 import "time"
 
 type MentorPermission struct {
-	AllowProvideObservations bool
-	AllowReleaseIntern       bool
-	AllowProvideFeedback     bool
-	AllowDeliverFeedback     bool
+	AllowProvideObservations bool `json:"allowProvideObservations" bson:"allowProvideObservations"`
+	AllowReleaseIntern       bool `json:"allowReleaseIntern" bson:"allowReleaseIntern"`
+	AllowProvideFeedback     bool `json:"allowProvideFeedback" bson:"allowProvideFeedback"`
+	AllowDeliverFeedback     bool `json:"allowDeliverFeedback" bson:"allowDeliverFeedback"`
 }
 
 type Mentor struct {
-	ID          int              `json:"id" bson:"id"`
+	ID          string           `json:"id" bson:"id"`
 	Permissions MentorPermission `json:"permissions" bson:"permissions"`
 }
 
