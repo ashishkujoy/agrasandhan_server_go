@@ -3,6 +3,7 @@ package main
 import (
 	"ashishkujoy/agrasandhan/configs"
 	"ashishkujoy/agrasandhan/di"
+	"ashishkujoy/agrasandhan/middlewares"
 	"ashishkujoy/agrasandhan/routes"
 	"fmt"
 )
@@ -12,7 +13,7 @@ func main() {
 	repositoriesCtx := di.NewRepositoryContext(env)
 	serviceCtx := di.NewServiceContext(repositoriesCtx)
 
-	r := routes.NewRootRouter(serviceCtx)
+	r := routes.NewRootRouter(serviceCtx, middlewares.NewMongoSession(env), env)
 
 	err := r.Run(fmt.Sprintf(":%s", env.Port))
 

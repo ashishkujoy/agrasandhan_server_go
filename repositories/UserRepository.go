@@ -4,9 +4,10 @@ import (
 	"ashishkujoy/agrasandhan/repositories/models"
 	"context"
 	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
 )
 
 // UserRepository interface defines the methods to save, update, retrieve and list users.
@@ -14,6 +15,7 @@ type UserRepository interface {
 	Save(user *models.User) error
 	DeleteAll() error
 	FindById(id string) (*models.User, error)
+	FindByEmailId(emailId string) (*models.User, error)
 	GetAll() ([]*models.User, error)
 	UpdateRole(id string, role models.UserRole) error
 }
@@ -90,4 +92,13 @@ func (r *UserRepositoryImpl) DeleteAll() error {
 	defer cancel()
 	_, err := r.collection.DeleteMany(ctx, bson.M{})
 	return err
+}
+
+// FindByEmailId method retrieves the user from the database by its emailId. It applies a timeout of 2 seconds.
+func (r *UserRepositoryImpl) FindByEmailId(emailId string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	var user models.User
+	err := r.collection.FindOne(ctx, bson.M{"email": emailId}).Decode(&user)
+	return &user, err
 }

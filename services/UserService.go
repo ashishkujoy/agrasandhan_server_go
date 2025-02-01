@@ -38,6 +38,12 @@ func (s *UserService) GetAllUsers() ([]*models.User, error) {
 	return s.repository.GetAll()
 }
 
+// GetUserById retrieves the user from the database by its id.
 func (s *UserService) GetUserById(id string) (*models.User, error) {
 	return s.repository.FindById(id)
+}
+
+// GetUserByEmailId retrieves the user from the database by its email id.
+func (s *UserService) GetUserByEmailId(emailId string) (*models.User, error) {
+	return s.repository.FindByEmailId(emailId)
 }
