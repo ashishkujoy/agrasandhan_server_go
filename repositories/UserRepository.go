@@ -17,7 +17,7 @@ type UserRepository interface {
 	FindById(id string) (*models.User, error)
 	FindByEmailId(emailId string) (*models.User, error)
 	GetAll() ([]*models.User, error)
-	UpdateRole(id string, role models.UserRole) error
+	UpdateRoles(id string, roles []string) error
 }
 
 // UserRepositoryImpl is the implementation of UserRepository interface. It uses mongoDb underneath to store the data.
@@ -79,10 +79,10 @@ func (r *UserRepositoryImpl) GetAll() ([]*models.User, error) {
 }
 
 // UpdateRole method updates the role of the user in the database. It applies a timeout of 5 seconds.
-func (r *UserRepositoryImpl) UpdateRole(id string, role models.UserRole) error {
+func (r *UserRepositoryImpl) UpdateRoles(id string, roles []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	_, err := r.collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$set": bson.M{"role": role}})
+	_, err := r.collection.UpdateOne(ctx, bson.M{"id": id}, bson.M{"$set": bson.M{"roles": roles}})
 	return err
 }
 

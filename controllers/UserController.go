@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"ashishkujoy/agrasandhan/services"
+
 	"github.com/gin-gonic/gin"
 )
 
 type UserCreationRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  int    `json:"role"`
+	Name  string   `json:"name"`
+	Email string   `json:"email"`
+	Roles []string `json:"roles"`
 }
 
 func AddUser(userService *services.UserService) gin.HandlerFunc {
@@ -19,7 +20,7 @@ func AddUser(userService *services.UserService) gin.HandlerFunc {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		user, err := userService.CreateUser(reqBody.Name, reqBody.Email, reqBody.Role)
+		user, err := userService.CreateUser(reqBody.Name, reqBody.Email, reqBody.Roles)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return

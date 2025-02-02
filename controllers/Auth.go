@@ -83,7 +83,7 @@ func generateToken(singingKey []byte, user *models.User) ([]byte, error) {
 		"email": user.Email,
 		"name":  user.Name,
 		"exp":   time.Now().Add(time.Hour * 24 * 366).Unix(),
-		"role":  user.Role,
+		"roles": user.Roles,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	key, err := token.SignedString(singingKey)
@@ -109,7 +109,7 @@ func decodeToken(signingKey []byte, tokenString string) (*models.User, error) {
 		ID:    claims["id"].(string),
 		Name:  claims["name"].(string),
 		Email: claims["email"].(string),
-		Role:  models.UserRole(claims["role"].(int)),
+		Roles: claims["roles"].([]string),
 	}
 	return user, nil
 }

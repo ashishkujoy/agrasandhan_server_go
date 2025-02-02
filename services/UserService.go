@@ -17,12 +17,12 @@ func NewUserService(repository repositories.UserRepository, idGenerator IdGenera
 }
 
 // CreateUser creates a new user with the given name, email and role.
-func (s *UserService) CreateUser(name, email string, role int) (*models.User, error) {
+func (s *UserService) CreateUser(name, email string, roles []string) (*models.User, error) {
 	user := &models.User{
 		ID:    s.idGenerator.GenerateStr(),
 		Name:  name,
 		Email: email,
-		Role:  models.UserRole(role),
+		Roles: roles,
 	}
 
 	err := s.repository.Save(user)

@@ -85,7 +85,12 @@ func TestBatchRoutes(t *testing.T) {
 	t.Run("Assign Mentor to Batch", func(t *testing.T) {
 		repository := RepositoryContext.BatchRepository
 		_ = repository.DeleteAll()
-		_ = RepositoryContext.UserRepository.Save(&models.User{ID: "11", Name: "Mentor 1", Email: "", Role: 1})
+		_ = RepositoryContext.UserRepository.Save(&models.User{
+			ID:    "11",
+			Name:  "Mentor 1",
+			Email: "",
+			Roles: []string{"mentor"},
+		})
 
 		batch := &models.Batch{ID: 10, Name: "Batch 1", StartDate: time.Now()}
 		_ = repository.Save(batch)

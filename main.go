@@ -13,7 +13,7 @@ func main() {
 	repositoriesCtx := di.NewRepositoryContext(env)
 	serviceCtx := di.NewServiceContext(repositoriesCtx)
 
-	r := routes.NewRootRouter(serviceCtx, middlewares.NewMongoSession(env), env)
+	r := routes.NewRootRouter(serviceCtx, middlewares.NewSession(env), env)
 
 	err := r.Run(fmt.Sprintf(":%s", env.Port))
 

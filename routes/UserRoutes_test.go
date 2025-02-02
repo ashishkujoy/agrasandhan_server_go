@@ -20,7 +20,7 @@ func TestAddUserRoutes(t *testing.T) {
 	req, _ := http.NewRequest(
 		"POST",
 		"/users",
-		strings.NewReader(`{"name": "Ashish", "email": "akj@test.com", "role": 1}`),
+		strings.NewReader(`{"name": "Ashish", "email": "akj@test.com", "roles": ["admin"]}`),
 	)
 
 	router.ServeHTTP(w, req)
@@ -30,7 +30,7 @@ func TestAddUserRoutes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "Ashish", actualBody.Name)
 	assert.Equal(t, "akj@test.com", actualBody.Email)
-	assert.Equal(t, models.UserRole(1), actualBody.Role)
+	assert.Equal(t, []string{"admin"}, actualBody.Roles)
 	assert.NotNil(t, actualBody.ID)
 }
 
@@ -38,9 +38,9 @@ func TestGetAllUsersRoutes(t *testing.T) {
 	repository := RepositoryContext.UserRepository
 	_ = repository.DeleteAll()
 
-	_ = repository.Save(&models.User{Name: "Martha", Email: "", Role: models.UserRole(1)})
-	_ = repository.Save(&models.User{Name: "James", Email: "", Role: models.UserRole(1)})
-	_ = repository.Save(&models.User{Name: "Jordan", Email: "", Role: models.UserRole(1)})
+	_ = repository.Save(&models.User{Name: "Martha", Email: "", Roles: []string{"admin"}})
+	_ = repository.Save(&models.User{Name: "James", Email: "", Roles: []string{"admin"}})
+	_ = repository.Save(&models.User{Name: "Jordan", Email: "", Roles: []string{"admin"}})
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/users", nil)
